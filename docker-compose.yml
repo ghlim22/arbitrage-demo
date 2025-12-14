@@ -1,0 +1,29 @@
+name: arbitrage-capturer
+
+services:
+  backend:
+    build: ./simple_app
+    mem_limit: 512m
+    networks:
+      - intra
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+
+  mongodb:
+    image: mongo:8.0.5
+    mem_limit: 512m
+    command: mongod
+    ports:
+      - "27017:27017"
+    networks:
+      - intra
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
+networks:
+  intra:
+    driver: bridge
