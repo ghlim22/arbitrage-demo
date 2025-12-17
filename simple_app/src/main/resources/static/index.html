@@ -1,0 +1,256 @@
+<!doctype html>
+<html data-pagefind-ignore=all lang=en>
+<head>
+    <meta charset=UTF-8/>
+    <meta content="width=device-width,initial-scale=1" name=viewport/>
+    <title>arbitrage capturer demo</title>
+    <style>:root {
+        --gap-size: 32px;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
+        color: #000
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #ffffff
+    }
+
+    footer, header {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        background: rgba(0, 0, 0, .05);
+        gap: 12px
+    }
+
+    header {
+        justify-content: space-between;
+        padding: 0 var(--gap-size);
+        gap: calc(var(--gap-size) * 2);
+        box-shadow: rgba(0, 0, 0, .05) 0 2px 6px 0;
+        flex-direction: row;
+        z-index: 1
+    }
+
+    header #site-logo {
+        font-weight: 600;
+        font-size: 32px;
+        padding: 16px;
+        background: var(--18-promo-gradient-02, linear-gradient(90deg, #00bce5 0, #2962ff 100%));
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text
+    }
+
+    header input[type=search] {
+        padding: 10px;
+        width: 100%;
+        height: 32px;
+        max-width: 400px;
+        border: 1px solid #ccc;
+        border-radius: 20px
+    }
+
+    footer {
+        flex-direction: column;
+        padding: calc(var(--gap-size) * .5) var(--gap-size);
+        margin-top: var(--gap-size);
+        border-top: solid 2px rgba(0, 0, 0, .1);
+        justify-content: center
+    }
+
+    #powered-by-tv p, footer p {
+        margin: 0;
+        font-size: 12px;
+        color: rgb(255, 255, 255)
+    }
+
+    main {
+        display: grid;
+        width: 100%;
+        padding: 0 calc(var(--gap-size) * .5);
+        /*max-width: 960px;*/
+        grid-template-columns:7fr 3fr;
+        grid-gap: var(--gap-size)
+    }
+
+    /*#advanced-chart, #company-profile, #fundamental-data, #symbol-info, .span-full-grid {*/
+    /*    grid-column: span 2*/
+    /*}*/
+
+    /*#powered-by-tv, #technical-analysis, #top-stories, .span-one-column {*/
+    /*    grid-column: span 1*/
+    /*}*/
+
+    #ticker-tape {
+        width: 100%;
+        margin-bottom: var(--gap-size)
+    }
+
+    #advanced-chart {
+        height: 500px
+    }
+
+    #company-profile {
+        height: 390px
+    }
+
+    #fundamental-data {
+        height: 490px
+    }
+
+    #technical-analysis, #top-stories, #crypto-all-chart {
+        height: 425px
+    }
+
+    #powered-by-tv {
+        display: flex;
+        background: #f8f9fd;
+        border: solid 1px #e0e3eb;
+        text-align: justify;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 14px;
+        padding: 16px;
+        border-radius: 6px
+    }
+
+    #powered-by-tv a, #powered-by-tv a:visited {
+        color: #2962ff
+    }
+
+    #crypto-all-chart,
+    #top-stories {
+        grid-column: span 1 !important;
+        width: 100%;
+    }
+
+    #chart {
+        margin-top: 20px;
+    }
+
+    @media (max-width: 800px) {
+        #powered-by-tv, #technical-analysis, #top-stories, .span-full-grid, main > section {
+            grid-column: span 2
+        }
+    }</style>
+    <script defer src="graph.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+<header>
+    <a href=# id=site-logo>arbitrage capturer demo</a>
+</header>
+<nav id="links">
+    <a href="./table.html"> table </a>
+</nav>
+<nav id=ticker-tape>
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+<!--
+        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/markets/" rel="noopener nofollow" target="_blank"><span class="blue-text">Ticker tape</span></a><span class="trademark"> by TradingView</span></div>
+-->
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+            {
+                "symbols": [
+                {
+                    "proName": "BITSTAMP:BTCUSD",
+                    "title": "BTC-USD"
+                },
+                {
+                    "proName": "BINANCE:BTCUSDT.P",
+                    "title": "BTC Perps"
+                },
+                {
+                    "proName": "BITSTAMP:ETHUSD",
+                    "title": "ETH-USD"
+                },
+                {
+                    "proName": "UPBIT:BTCKRW",
+                    "title": "BTC-KRW"
+                },
+                {
+                    "proName": "UPBIT:ETHKRW",
+                    "title": "ETH-KRW"
+                },
+                {
+                    "proName": "UPBIT:XRPKRW",
+                    "title": "XRP-KRW"
+                },
+                {
+                    "proName": "FX_IDC:USDKRW",
+                    "title": "USD-KRW"
+                },
+                {
+                    "proName": "UPBIT:SOLKRW",
+                    "title": "SOL-KRW"
+                }
+            ],
+                "colorTheme": "light",
+                "locale": "en",
+                "largeChartUrl": "",
+                "isTransparent": false,
+                "showSymbolLogo": true,
+                "displayMode": "compact"
+            }
+        </script>
+    </div>
+    <!-- TradingView Widget END -->
+</nav>
+<main>
+    <section id="crypto-all-chart">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                    "defaultColumn": "overview",
+                    "screener_type": "crypto_mkt",
+                    "displayCurrency": "USD",
+                    "colorTheme": "light",
+                    "isTransparent": true,
+                    "locale": "en",
+                    "width": "100%",
+                    "height": "100%"
+                }
+            </script>
+        </div>
+        <!-- TradingView Widget END -->
+    </section>
+    <section id="top-stories">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                {
+                    "displayMode": "regular",
+                    "feedMode": "market",
+                    "colorTheme": "light",
+                    "isTransparent": false,
+                    "locale": "en",
+                    "market": "crypto",
+                    "width": 400,
+                    "height": "100%"
+                }
+            </script>
+        </div>
+        <!-- TradingView Widget END -->
+    </section>
+    <section id="chart"></section>
+</main>
+<footer>
+</footer>
+</body>
+
+
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>차익거래 사이클 조회</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        input, button {
+            padding: 6px;
+            margin-right: 6px;
+        }
+
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        .positive {
+            color: #d93025;
+            font-weight: bold;
+        }
+
+        .negative {
+            color: #1a73e8;
+        }
+    </style>
+</head>
+<body>
+
+<h2>차익거래 사이클 조회</h2>
+
+<div>
+</div>
+<br>
+
+<div>
+    <label>
+        Path:
+        <input type="text" id="path" />
+    </label>
+<!--    <label>-->
+<!--        Start:-->
+<!--        <input type="datetime-local" id="start" />-->
+<!--    </label>-->
+
+<!--    <label>-->
+<!--        End:-->
+<!--        <input type="datetime-local" id="end" />-->
+<!--    </label>-->
+
+    <button onclick="fetchData()">조회</button>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>start</th>
+        <th>end</th>
+        <th>lifetime</th>
+        <th>average expected return (%)</th>
+    </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+</table>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const path = params.get("path");
+
+        if (path) {
+            document.getElementById("path").value = path;
+        }
+    });
+
+    const formatter = new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        fractionalSecondDigits: 3
+    });
+
+    function fetchData() {
+        const path = document.getElementById("path").value;
+        // const startInput = document.getElementById("start").value;
+        // const endInput = document.getElementById("end").value;
+
+        // if (!path || !startInput || !endInput) {
+        //     alert("path / 시작 / 종료 날짜를 모두 입력하세요");
+        //     return;
+        // }
+
+        // const startTs = new Date(startInput).getTime();
+        // const endTs = new Date(endInput).getTime();
+        //
+        const url =
+            `http://localhost:8080/api/cycle` +
+            `?path=${encodeURIComponent(path)}`; //+
+            // `&start=${startTs}` +
+            // `&end=${endTs}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(renderTable)
+            .catch(err => alert(err));
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById("table-body");
+        tbody.innerHTML = "";
+
+        data.list.forEach((row, idx) => {
+            const tr = document.createElement("tr");
+
+            // const start = new Date(row.start).toLocaleString();
+            const start = row.start;
+            const end = row.end;
+            const lifetime = end - start;
+            const pct = row.averageExpectedReturn.toFixed(4);
+
+            tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${formatter.format(new Date(start))}</td>
+      <td>${formatter.format(new Date(end))}</td>
+      <td>${lifetime}ms</td>
+      <td class="${row.expected >= 0 ? "positive" : "negative"}">
+        ${pct} %
+      </td>
+    `;
+
+            tbody.appendChild(tr);
+        });
+    }
+</script>
+
+</body>
+</html>
